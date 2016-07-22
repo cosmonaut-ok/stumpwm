@@ -30,6 +30,23 @@
 
 ;;; Main
 
+(defun get-config-path (path)
+  "Get dynamic path of some config file"
+  (check-type path (or string pathname))
+  (let* ((xdg-config-dir
+          (let ((dir (getenv "XDG_CONFIG_HOME")))
+            (if (or (not dir) (string= dir ""))
+                (merge-pathnames  #p".config/" (user-homedir-pathname))
+              dir)))
+         (classic-path
+          (probe-file (merge-pathnames #p".stumpwm.d/init.lisp" (user-homedir-pathname))))
+         (xdg-path
+          (probe-file (merge-pathnames #p"stumpwm/config" xdg-config-dir)))
+         (etc-path (probe-file #p"/etc/"))
+         (dynamic-path (or classic-path xdg-path etc-path))
+         (given-path (if (typep path 'string) (parse-namestring path) path)))
+    (merge-pathnames given-path dynamic-path)))
+
 (defun load-rc-file (&optional (catch-errors t))
   "Load the user's .stumpwmrc file or the system wide one if that
 doesn't exist. Returns a values list: whether the file loaded (t if no

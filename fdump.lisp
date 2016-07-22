@@ -37,6 +37,9 @@
           fdump-windows
           fdump-x
           fdump-y
+          fgdump
+          fgdump-number
+          fgdump-name
           gdump
           gdump-current
           gdump-name
@@ -55,6 +58,10 @@
 ;; group dump
 (defstruct gdump
   number name tree current)
+
+;; floating group dump
+(defstruct fgdump
+  number name)
 
 ;; screen dump
 (defstruct sdump
