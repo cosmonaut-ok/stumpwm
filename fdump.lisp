@@ -105,24 +105,15 @@
   (make-ddump :screens (mapcar 'dump-screen *screen-list*)
               :current (screen-id (current-screen))))
 
-(defun dump-to-file (foo file &key backup-p)
+(defun dump-to-file (foo file)
   "Dump foo structure to file"
   (if (ensure-directories-exist file)
-      (progn
-	(when (and backup-p (file-exists-p file))
-	  (let ((directory (pathname-directory file))
-		(name (pathname-name file))
-		(suffix "~"))
-	    (copy-file file
-		       (make-pathname
-			:directory directory
-			:name (concat name suffix)))))
-	(with-open-file (fp file :direction :output :if-exists :supersede)
-		      (with-standard-io-syntax
-		       (let ((*package* (find-package :dswm))
-            (*print-pretty* t))
-        (prin1 foo fp)))))
-    (error "Cannot dump file ~a. Cannot create directory" file)))
+      (with-open-file (fp file :direction :output :if-exists :supersede)
+                      (with-standard-io-syntax
+                       (let ((*package* (find-package :dswm))
+                             (*print-pretty* t))
+                         (prin1 foo fp))))
+    (error "Cannot dump to file ~a. Cannot create directory" file)))
 
 (defcommand dump-group-to-file (file) ((:rest "Dump To File: "))
   "Dumps the frames of the current group of the current screen to the named file."
