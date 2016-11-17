@@ -59,36 +59,6 @@
 	  recall-all-window-placement
 	  ))
 
-;;;; from group.lisp
-(defun convert-group (group) ;; TODO: test, is it working :)
-  "NEW: Convert group from tiling to float mode and from float to tiling"
-  (let* ((original-group-number (group-number group))
-	 (original-group-name (group-name group))
-	 (original-screen (group-screen group))
-	 (original-group group)
-	 (tmp-group-number (find-free-hidden-group-number original-screen))
-	 (new-group
-	  (progn
-	    (setf (group-number original-group) tmp-group-number)
-	    (setf (group-name original-group) (concat "tmp-" original-group-name "-tmp"))
-	    (cond ((eq (type-of original-group) 'tile-group)
-		   (add-group original-screen
-			      original-group-name
-			      :type 'float-group
-			      :background t))
-		  ((eq (type-of original-group) 'float-group)
-		   (add-group (current-screen)
-			      original-group-name
-			      :type 'tile-group
-			      :background t))
-		  (t
-		   (error "Incorrect group type ~a" original-group))))))
-    (progn ;; TODO: replace to "and"
-      (kill-group original-group new-group)
-      (setf (group-number new-group) original-group-number)
-      (setf (group-name new-group) original-group-name))))
-;;;; /from group.lisp
-
 ;;;; from library.lisp
 (defun file-exists-p (pathspec)
   "Checks whether the file named by the pathname designator PATHSPEC

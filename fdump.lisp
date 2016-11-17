@@ -212,7 +212,7 @@
 	 (setf (group-name group) (fgdump-name gdump)))
 	;; If group is float and dump is tile or group is tile and dump is float
 	(t
-	 (convert-group group) ;; TODO: TEST! TEST! TEST!!!
+	 (convert-group-type group) ;; TODO: TEST! TEST! TEST!!!
 	 (restore-group group gdump)))
       ;; correct group number, if needed
       (when (not (null restore-group-number-p))

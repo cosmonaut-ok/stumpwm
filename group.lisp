@@ -175,6 +175,36 @@ at 0. Return a netwm compliant group id."
       (update-all-mode-lines)
       (run-hook-with-args *focus-group-hook* new-group old-group))))
 
+(defun convert-group-type (group)
+  "Convert group from tiling to float mode and from float to tiling"
+  ;; TODO: it's just moving old group content to newone
+  ;; is it possible to make convertation simpler?
+  (let* ((original-group-number (group-number group))
+	 (original-group-name (group-name group))
+	 (original-screen (group-screen group))
+	 (original-group group)
+	 (tmp-group-number (find-free-hidden-group-number original-screen))
+	 (new-group
+	  (progn
+	    (setf (group-number original-group) tmp-group-number)
+	    (setf (group-name original-group) (concat "*tmp-" original-group-name "-tmp*"))
+	    (cond ((eq (type-of original-group) 'tile-group)
+		   (add-group original-screen
+			      original-group-name
+			      :type 'float-group
+			      :background t))
+		  ((eq (type-of original-group) 'float-group)
+		   (add-group (current-screen)
+			      original-group-name
+			      :type 'tile-group
+			      :background t))
+		  (t
+		   (error "Incorrect group type ~a" original-group))))))
+    (progn ;; TODO: replace to "and"
+      (kill-group original-group new-group)
+      (setf (group-number new-group) original-group-number)
+      (setf (group-name new-group) original-group-name))))
+
 (defun move-window-to-group (window to-group)
   (labels ((really-move-window (window to-group)
              (unless (eq (window-group window) to-group)
